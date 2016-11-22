@@ -18,7 +18,11 @@ export function activate(context: vscode.ExtensionContext) {
             let foundFiles :Array<FileResult> = new Array<FileResult>();
             let workspace = vscode.workspace;
             let window = vscode.window;
-        await workspace.findFiles("**/*.html","").then(async (files)=>{
+            let selectedExt = "html";
+            window.showInformationMessage("Trying to find css class '"+cssname+"'");
+            await window.showQuickPick(["html","htm","xhtml","ejs","cshtml","aspx","ascx","jsp"])
+            .then(s=> selectedExt = s);
+        await workspace.findFiles("**/*."+selectedExt,"").then(async (files)=>{
             for(let i=0;i<files.length;i++)
             await workspace.openTextDocument(files[i]).then(doc=>{
                     let text = doc.getText();
@@ -44,6 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
                   })
                 });
         });
+
          await  window.showQuickPick(foundFiles.map(f=>f.fileName+" line:"+(f.nr+1) + " "+f.line.trim()))
             
             .then(path=>{
@@ -70,7 +75,9 @@ export function activate(context: vscode.ExtensionContext) {
             let cssName:string = null;
            
             let foundFiles :Array<FileResult> = new Array<FileResult>();
-
+            let selectedExt="html"
+            await window.showQuickPick(["html","htm","xhtml","ejs","cshtml","aspx","ascx","jsp"])
+            .then(s=> selectedExt = s);
         await workspace.findFiles("**/*.html","").then(async (files)=>{
 
             await window.showInputBox().then(async val=>{
@@ -80,7 +87,6 @@ export function activate(context: vscode.ExtensionContext) {
             for(let i=0;i<files.length;i++)
             await workspace.openTextDocument(files[i]).then(doc=>{
                    let lines = doc.getText().split("\n");
-                   
                    let nr = 0;
                   lines.forEach(line=>{
                       if(!line.includes("class")){
